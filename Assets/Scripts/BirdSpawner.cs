@@ -42,7 +42,6 @@ public class BirdSpawner : MonoBehaviour
             }
             else
             {
-                // Fallback catch if the script lookup failed
                 ClearAllPipes();
             }
 
@@ -51,7 +50,6 @@ public class BirdSpawner : MonoBehaviour
 
     private void ExecuteAdvancedSelection()
     {
-        // 1. Gather and sort all scripts by performance
         List<FlyBehaviour> sortedBirds = _birds
             .Select(b => b.GetComponentInChildren<FlyBehaviour>())
             .Where(script => script is not null)
@@ -60,7 +58,6 @@ public class BirdSpawner : MonoBehaviour
 
         Debug.Log($"Gen Winner lasted: {sortedBirds[0]._timer:F2}s. Top Elite: {sortedBirds[4]._timer:F2}s");
 
-        // 2. ISOLATE THE ELITE POOL (Save the top 15 performing birds to breed from)
         List<Brain> elitePool = new List<Brain>();
         int eliteCount = 15;
         for (int i = 0; i < eliteCount; i++)
@@ -68,46 +65,38 @@ public class BirdSpawner : MonoBehaviour
             elitePool.Add(sortedBirds[i].brain);
         }
 
-        // 3. Clear out all the old physical GameObjects completely
         foreach (GameObject bird in _birds) Destroy(bird);
         _birds.Clear();
 
-        // 4. Instantiate 250 fresh bird bodies
         SpawnAllBirds();
 
-        // 5. CLONE THE ELITES CRUCIAL BLUEPRINTS BACK EXACTLY (No Mutations for Top 5)
         for (int i = 0; i < 5; i++)
         {
             FlyBehaviour script = _birds[i].GetComponentInChildren<FlyBehaviour>();
             script.SetNewWeightsAndBias(elitePool[i].hiddenWeights, elitePool[i].hiddenBiases, elitePool[i].outputWeights, elitePool[i].outputBias);
         }
 
-        // 6. BREED THE REMAINING FLOCK USING CROSSOVER & MUTATION
-        float mutationRate = 0.10f;  // 10% chance per weight link
-        float mutationAmount = 0.02f; // Gentle micro-adjustments prevent memory ruin
+        float mutationRate = 0.10f;
+        float mutationAmount = 0.02f;
 
         for (int i = 5; i < _birds.Count; i++)
         {
             FlyBehaviour childScript = _birds[i].GetComponentInChildren<FlyBehaviour>();
 
-            // Pick two random distinct parents from your top elite stock pool
             Brain parentA = elitePool[rng.Next(0, eliteCount)];
             Brain parentB = elitePool[rng.Next(0, eliteCount)];
 
-            // Prepare memory structural maps for child brain allocation arrays
             float[,] childHWeights = new float[parentA.hiddenWeights.GetLength(0), parentA.hiddenWeights.GetLength(1)];
             float[] childHBiases = new float[parentA.hiddenBiases.Length];
             float[] childOWeights = new float[parentA.outputWeights.Length];
             float childOBias = (rng.NextDouble() < 0.5) ? parentA.outputBias : parentB.outputBias;
 
-            // CROSSOVER MATRIX A: 50% chance to inherit link from Parent A or B
             for (int x = 0; x < childHWeights.GetLength(0); x++)
             {
                 for (int y = 0; y < childHWeights.GetLength(1); y++)
                 {
                     childHWeights[x, y] = (rng.NextDouble() < 0.5) ? parentA.hiddenWeights[x, y] : parentB.hiddenWeights[x, y];
 
-                    // APPLY MUTATION GENE SLOTS
                     if (rng.NextDouble() < mutationRate)
                     {
                         childHWeights[x, y] += (float)(rng.NextDouble() * 2.0 - 1.0) * mutationAmount;
@@ -116,7 +105,6 @@ public class BirdSpawner : MonoBehaviour
                 }
             }
 
-            // CROSSOVER MATRIX B & BIASES
             for (int x = 0; x < childOWeights.Length; x++)
             {
                 childHBiases[x] = (rng.NextDouble() < 0.5) ? parentA.hiddenBiases[x] : parentB.hiddenBiases[x];
@@ -134,14 +122,12 @@ public class BirdSpawner : MonoBehaviour
                 }
             }
 
-            // Final Output Bias Mutation
             if (rng.NextDouble() < mutationRate)
             {
                 childOBias += (float)(rng.NextDouble() * 2.0 - 1.0) * mutationAmount;
                 childOBias = Mathf.Clamp(childOBias, -1f, 1f);
             }
 
-            // Inject the combined, micro-mutated network brain back into the child
             childScript.SetNewWeightsAndBias(childHWeights, childHBiases, childOWeights, childOBias);
         }
 

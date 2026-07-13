@@ -7,7 +7,6 @@ public class FlyBehaviour : MonoBehaviour
     [SerializeField] private float _rotationSpeed = 10f;
 
     [Header("Manual Evolution Boundaries")]
-    // PHYSICALLY DRAG YOUR FLOOR AND CEILING GAMEOBJECTS INTO THESE BOXES IN THE INSPECTOR
     [SerializeField] private Transform _floorTransform;
     [SerializeField] private Transform _ceilingTransform;
 
@@ -39,7 +38,6 @@ public class FlyBehaviour : MonoBehaviour
 
     void Start()
     {
-        // Safety Fallback: Automatically attempts to hook the objects if you forget to drag them in
         if (_floorTransform == null) { GameObject f = GameObject.FindWithTag("Floor"); if (f != null) _floorTransform = f.transform; }
         if (_ceilingTransform == null) { GameObject c = GameObject.FindWithTag("Ceiling"); if (c != null) _ceilingTransform = c.transform; }
     }
@@ -50,8 +48,6 @@ public class FlyBehaviour : MonoBehaviour
 
         _timer += Time.deltaTime;
 
-        // 1. Establish maximum limits based on your gameplay space
-        // (Assumes your PipeSpawner _heightRange is 3f and spawn X is 8f)
         float maxPipeX = 8f;
         float maxPipeY = 3f;
         float minPipeY = -3f;
@@ -62,10 +58,8 @@ public class FlyBehaviour : MonoBehaviour
             float rawX = nextPipe.transform.position.x - transform.position.x;
             float rawY = nextPipe.transform.position.y - transform.position.y;
 
-            // Forces X cleanly between 0.0 and 1.0
             displacementToPipeX = Mathf.Clamp01(rawX / maxPipeX);
 
-            // Forces Y precisely between -1.0 and 1.0 based on real boundaries
             float totalYRange = maxPipeY - minPipeY;
             displacementToPipeY = ((rawY - minPipeY) / totalYRange) * 2f - 1f;
         }
@@ -75,7 +69,6 @@ public class FlyBehaviour : MonoBehaviour
             displacementToPipeY = 0f;
         }
 
-        // 2. FIXED: Calculate boundary displacements using your direct Inspector transforms
         float floorPos = (_floorTransform != null) ? _floorTransform.position.y : -5f;
         float ceilingPos = (_ceilingTransform != null) ? _ceilingTransform.position.y : 5f;
         float levelHeightRange = ceilingPos - floorPos;
@@ -86,10 +79,8 @@ public class FlyBehaviour : MonoBehaviour
         float rawCeilDist = transform.position.y - ceilingPos;
         displacementToCeiling = Mathf.Clamp(((rawCeilDist - floorPos) / levelHeightRange) * 2f - 1f, -1f, 1f);
 
-        // 3. Map velocity cleanly between -1.0 and 1.0 (assuming max speed is +/- 8)
         float normalizedVelocity = Mathf.Clamp(_rb.linearVelocityY / 8f, -1f, 1f);
 
-        // 4. Assemble the 5 perfectly normalized neural parameters
         float[] brainInputs = new float[5];
         brainInputs[0] = displacementToFloor;
         brainInputs[1] = displacementToCeiling;
@@ -99,7 +90,6 @@ public class FlyBehaviour : MonoBehaviour
 
         brain.UpdateInputs(brainInputs);
 
-        // 5. Fire brain logic threshold jump decision
         if (brain.Think())
         {
             _rb.linearVelocityY = _velocity;
