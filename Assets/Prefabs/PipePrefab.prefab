@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 8155202407307258800}
   - component: {fileID: 2881981716253208046}
   - component: {fileID: 7426019415643458090}
-  - component: {fileID: 387931560554866413}
   m_Layer: 0
   m_Name: PipeBottom
-  m_TagString: Pipe
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -28,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 5098041407721014508}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -3.98, z: 0}
+  m_LocalPosition: {x: 0, y: -4, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -140,19 +139,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.28, y: 1.62}
   m_EdgeRadius: 0
---- !u!114 &387931560554866413
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5098041407721014508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13b7e497f63d0564282003adc5de4716, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MovePipe
-  _velocity: 3
 --- !u!1 &5181051036857622804
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,9 +148,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4188450946058747533}
+  - component: {fileID: 7606573443148291809}
   m_Layer: 0
   m_Name: PipePrefab
-  m_TagString: Untagged
+  m_TagString: Pipe
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -186,6 +173,19 @@ Transform:
   - {fileID: 8155202407307258800}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7606573443148291809
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5181051036857622804}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13b7e497f63d0564282003adc5de4716, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MovePipe
+  _velocity: 3
 --- !u!1 &6862971638143250277
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,10 +197,9 @@ GameObject:
   - component: {fileID: 6587896687746579028}
   - component: {fileID: 894447023467860219}
   - component: {fileID: 877298296100280365}
-  - component: {fileID: 3783603456785802223}
   m_Layer: 0
   m_Name: PipeTop
-  m_TagString: Pipe
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -214,7 +213,7 @@ Transform:
   m_GameObject: {fileID: 6862971638143250277}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.02, z: 0}
+  m_LocalPosition: {x: 0, y: 4, z: 0}
   m_LocalScale: {x: 4, y: 4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -326,16 +325,3 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.28, y: 1.62}
   m_EdgeRadius: 0
---- !u!114 &3783603456785802223
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6862971638143250277}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13b7e497f63d0564282003adc5de4716, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::MovePipe
-  _velocity: 3
