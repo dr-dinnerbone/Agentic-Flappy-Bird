@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class BirdSpawner : MonoBehaviour
@@ -10,13 +11,16 @@ public class BirdSpawner : MonoBehaviour
     private int _aliveBirds;
     private System.Random rng;
     private PipeSpawner _pipeSpawnerScript;
-
+    [SerializeField] private TextMeshProUGUI _gen;
+    [SerializeField] private TextMeshProUGUI _aliveBirdsNumber;
+    private int gen = 1;
     void Start()
     {
         _birds = new List<GameObject>();
         _aliveBirds = _birdsToSpawn;
         rng = new System.Random();
         _pipeSpawnerScript = Object.FindFirstObjectByType<PipeSpawner>();
+        _gen.text = $"Generation: {gen}";
 
         SpawnAllBirds();
     }
@@ -32,7 +36,7 @@ public class BirdSpawner : MonoBehaviour
             }
         }
         _aliveBirds = newAliveCount;
-
+        _aliveBirdsNumber.text = $"Alive Birds: {_aliveBirds}";
         if (_aliveBirds < 1)
         {
             ExecuteAdvancedSelection();
@@ -44,7 +48,8 @@ public class BirdSpawner : MonoBehaviour
             {
                 ClearAllPipes();
             }
-
+            gen++;
+            _gen.text = $"Generation: {gen}";
         }
     }
 

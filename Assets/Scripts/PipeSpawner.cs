@@ -40,7 +40,5 @@ public class PipeSpawner : MonoBehaviour
         _timer = 0f;
 
         SpawnPipe();
-
-        Debug.Log("Pipe runway timeline has been perfectly synchronized for the new flock!");
     }
 }

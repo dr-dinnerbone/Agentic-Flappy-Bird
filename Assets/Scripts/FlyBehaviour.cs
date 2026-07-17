@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class FlyBehaviour : MonoBehaviour
@@ -10,6 +11,9 @@ public class FlyBehaviour : MonoBehaviour
     [SerializeField] private Transform _floorTransform;
     [SerializeField] private Transform _ceilingTransform;
 
+    [SerializeField] private TextMeshProUGUI _score;
+    private int score = 0;
+
     private Rigidbody2D _rb;
     private Collider2D _collider;
     private SpriteRenderer _renderer;
@@ -19,17 +23,23 @@ public class FlyBehaviour : MonoBehaviour
     private float displacementToCeiling;
     private float displacementToFloor;
 
+    private SoundManager _soundManager;
+
     public Brain brain;
     public bool _alive { get; private set; }
     public float _timer { get; private set; }
 
     void Awake()
     {
+        _soundManager = FindFirstObjectByType<SoundManager>();
         _alive = true;
         _rb = GetComponent<Rigidbody2D>();
         _collider = GetComponent<Collider2D>();
         _renderer = GetComponentInChildren<SpriteRenderer>();
-
+        GameObject text = GameObject.FindWithTag("ScoreText");
+        _score = text.GetComponent<TextMeshProUGUI>();
+        score = 0;
+        _score.text = score.ToString();
         if (brain == null)
         {
             brain = new Brain(5);
@@ -93,6 +103,7 @@ public class FlyBehaviour : MonoBehaviour
         if (brain.Think())
         {
             _rb.linearVelocityY = _velocity;
+            //_soundManager.PlayJump();
         }
     }
 
@@ -108,10 +119,21 @@ public class FlyBehaviour : MonoBehaviour
         HandleDeath();
     }
 
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (!_alive) return;
+
+        if (collision.CompareTag("ScoreTrigger"))
+        {
+            Debug.Log("Successfully passed the pipe!");
+            CalculateScore();
+        }
+    }
+
     private void HandleDeath()
     {
         _alive = false;
-
+        //_soundManager.PlayHit();
         _rb.linearVelocity = Vector2.zero;
         _rb.angularVelocity = 0f;
         _rb.constraints = RigidbodyConstraints2D.FreezePosition;
@@ -130,8 +152,6 @@ public class FlyBehaviour : MonoBehaviour
         {
             float distanceX = pipe.transform.position.x - transform.position.x;
 
-            // FIXED: Change -1.5f to a strict forward-only or minimal margin check (e.g., -0.1f)
-            // This stops the bird from looking backward at old pipes floating on the left side of the screen
             if (distanceX > -0.1f)
             {
                 if (distanceX < closestDistanceX)
@@ -144,19 +164,25 @@ public class FlyBehaviour : MonoBehaviour
         return closestUpcomingPipe;
     }
 
+    private void CalculateScore()
+    {
+        if (!_alive) return;
+        score++;
+        _score.text = score.ToString();
+        //_soundManager.PlayPoint();
+    }
 
     public void SetNewWeightsAndBias(float[,] hWeights, float[] hBiases, float[] oWeights, float oBias)
     {
-        // Injects the multi-neuron variables straight into a fresh brain instance
         brain = new Brain(hWeights, hBiases, oWeights, oBias);
     }
-
 
     public void ResetBird(Vector3 startingPosition)
     {
         _alive = true;
         _timer = 0f;
-
+        score = 0;
+        _score.text = score.ToString();
         transform.position = startingPosition;
         transform.rotation = Quaternion.identity;
 
