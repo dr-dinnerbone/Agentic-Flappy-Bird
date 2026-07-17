@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class FlyBehaviour : MonoBehaviour
 {
@@ -105,6 +106,13 @@ public class FlyBehaviour : MonoBehaviour
             _rb.linearVelocityY = _velocity;
             //_soundManager.PlayJump();
         }
+
+        if (Keyboard.current.tabKey.wasPressedThisFrame)
+        {
+            score += 100;
+            _score.text = score.ToString();
+        }
+
     }
 
     void FixedUpdate()
